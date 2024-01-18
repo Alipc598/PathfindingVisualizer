@@ -10,6 +10,25 @@ PathfindingVisualizer is an interactive built with the Kivy framework. It's desi
 - **Real-Time Visualization**: Watch the algorithm in action as it searches for the shortest path.
 - **Performance Metrics**: View the number of nodes explored and the time taken for each algorithm run.
 
+## Downloading the Release
+
+You can download the latest version of PathfindingVisualizer from the Releases section of this repository. The release includes a standalone executable file that you can run on your system.
+
+### Latest Release
+
+Download the latest release of PathfindingVisualizer [here](https://github.com/Alipc598/PathfindingVisualizer/releases/latest).
+
+### Requirements to Run the Executable
+
+To run the PathfindingVisualizer executable, ensure you have the following installed on your system:
+
+- **Windows Operating System**: The provided `.exe` file is compatible with Windows. If you're using a different OS, you'll need to run the application from the source code.
+
+- **Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017, and 2019**: Some users might need to install this if it's not already present on their system. It can be downloaded from [Microsoft's official site](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
+
+After downloading the executable, double-click on it to run the application. No additional installation is necessary.
+
+
 ## Installation
 
 To run PathfindingVisualizer, you need Python and Kivy installed on your system. Follow these steps to set up the environment:
