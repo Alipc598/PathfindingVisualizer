@@ -22,7 +22,7 @@ To run PathfindingVisualizer, you need Python and Kivy installed on your system.
 2. **Install Dependencies**:
    Navigate to the cloned directory and install the required packages:
    ```bash
-   pip install -r requirements.txt
+   pip install pyinstaller
    ```
 
 3. **Run the Application**:
