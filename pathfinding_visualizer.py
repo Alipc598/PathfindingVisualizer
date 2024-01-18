@@ -154,6 +154,10 @@ class Cell(Button):
         self.cell_state = 'goal'
         self.background_color = (0, 0, 1, 1)
 
+    def on_touch_down(self, touch):
+    # Do nothing(if this gets changed, the app will crash on clicking on grid, SO DON"T for 100th time...)
+        return
+
 class TextOutput:
     def __init__(self, text_widget):
         self.text_widget = text_widget
