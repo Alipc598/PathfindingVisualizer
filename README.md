@@ -68,8 +68,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - [Kivy](https://kivy.org/) - The open-source Python library for developing multitouch applications.
-- Contributors and supporters of the project.
-
 ---
 
 © 2024 Ali Ghaedi. All Rights Reserved.
