@@ -1,7 +1,7 @@
 
-# KivyPathfinder
+# Pathfinding Visualizer
 
-KivyPathfinder is an interactive pathfinding visualizer built with the Kivy framework. It's designed to demonstrate the workings of A* and Branch and Bound, in a visually engaging and intuitive way based on scenarios of my Pathfinding project.
+PathfindingVisualizer is an interactive built with the Kivy framework. It's designed to demonstrate the workings of A* and Branch and Bound, in a visually engaging and intuitive way based on scenarios of my Pathfinding project.
 
 ## Features
 
@@ -12,11 +12,11 @@ KivyPathfinder is an interactive pathfinding visualizer built with the Kivy fram
 
 ## Installation
 
-To run KivyPathfinder, you need Python and Kivy installed on your system. Follow these steps to set up the environment:
+To run PathfindingVisualizer, you need Python and Kivy installed on your system. Follow these steps to set up the environment:
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/Alipc598/KivyPathfinder.git
+   git clone https://github.com/Alipc598/PathfindingVisualizer.git
    ```
    
 2. **Install Dependencies**:
@@ -27,12 +27,12 @@ To run KivyPathfinder, you need Python and Kivy installed on your system. Follow
 
 3. **Run the Application**:
    ```bash
-   python KivyPathfinder.py
+   python Pathfinding-Visualizer.py
    ```
 
 ## Usage
 
-After launching KivyPathfinder, use the following steps to interact with the application:
+After launching PathfindingVisualizer, use the following steps to interact with the application:
 
 1. **Select a Grid Layout**: Choose a pre-defined grid layout.
 2. **Choose an Algorithm**: Select the algorithm you want to visualize from the dropdown menu.
