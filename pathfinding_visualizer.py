@@ -10,6 +10,9 @@ from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.graphics import Color, Line, Ellipse, Rectangle
 from kivy.core.window import Window
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+
 
 grid = np.array([
     [0, 0, 0, 0, 0],
@@ -361,13 +364,21 @@ class PathfindingVisualizerApp(App):
         self.clear_path()  
         self.selected_algorithm = text
 
+    def show_popup(self, title, message):
+        popup = Popup(title=title, content=Label(text=message), size_hint=(None, None), size=(400, 200))
+        popup.open()
 
+    
     def run_algorithm(self, instance):
         self.clear_path()
         Clock.unschedule(self.animate_path)
 
-        if not self.selected_algorithm:
-            print("Please select an algorithm first.")
+        if not hasattr(self, 'selected_algorithm') or self.selected_algorithm is None:
+            self.show_popup("Whoops", "Please select an algorithm first.")
+            return
+
+        if not hasattr(self, 'start_point') or not hasattr(self, 'goal_point'):
+            self.show_popup("Whoops", "Please select a grid first.")
             return
 
         grid_state = self.get_grid_state()
@@ -392,6 +403,8 @@ class PathfindingVisualizerApp(App):
             self.display_path(path)
         else:
             print("No path found.")
+
+    
 
 
 if __name__ == '__main__':
