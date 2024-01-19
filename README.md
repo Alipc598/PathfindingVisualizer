@@ -31,7 +31,7 @@ After downloading the executable, double-click on it to run the application. No 
 
 ## Installation
 
-To run PathfindingVisualizer, you need Python and Kivy installed on your system. Follow these steps to set up the environment:
+To run pathfinding_visualizer.py, you need Python and Kivy installed on your system. Follow these steps to set up the environment:
 
 1. **Clone the Repository**:
    ```bash
