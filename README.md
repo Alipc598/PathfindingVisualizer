@@ -25,6 +25,19 @@ The project is structured into several modular files for better organization and
 
 Download the latest version of PathfindingVisualizer from the Releases section of this repository. The release includes a standalone executable file that you can run on your system.
 
+## Dependencies
+
+Before running PathfindingVisualizer, ensure you have the following dependencies installed:
+
+- `Kivy`: For the graphical user interface.
+- `numpy`: Used for mathematical operations and array manipulations.
+
+You can install these dependencies using pip:
+
+```
+pip install kivy numpy
+```
+
 ## Installation
 
 To run PathfindingVisualizer from source:
@@ -40,7 +53,3 @@ Contributions to the PathfindingVisualizer are welcome. Please read the contribu
 ## License
 
 PathfindingVisualizer is licensed under [MIT License](LICENSE).
-
-## Acknowledgments
-
-Special thanks to all contributors and supporters of the Pathfinding Visualizer project.
