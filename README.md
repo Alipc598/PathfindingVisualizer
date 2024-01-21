@@ -10,16 +10,18 @@ PathfindingVisualizer is an interactive tool built with the Kivy framework, desi
 - **Real-Time Visualization**: Watch the algorithms in action as they search for the shortest path.
 - **Performance Metrics**: View the number of nodes explored and the time taken for each algorithm run.
 
-## Modular File Structure
+## Project Structure
 
-The project is structured into several modular files for better organization and maintainability:
+The project is organized into two main directories for better organization and maintainability:
 
-- `algorithms.py`: Contains the implementation of the A* and Branch and Bound algorithms.
-- `app.py`: The main application file that initializes and runs the Kivy application.
-- `constants.py`: Defines various constants used throughout the project.
-- `grid_components.py`: Manages the grid components, including obstacles, start points, and end points.
-- `main.py`: The entry point of the application, responsible for setting up and starting the app.
-- `utilities.py`: Provides utility functions used across the project.
+- `src`: Contains the source code files.
+  - `algorithms.py`: Implementation of the A* and Branch and Bound algorithms.
+  - `app.py`: Initializes and runs the Kivy application.
+  - `constants.py`: Defines various constants used throughout the project.
+  - `grid_components.py`: Manages the grid components, including obstacles, start points, and end points.
+  - `utilities.py`: Provides utility functions used across the project.
+- Root Directory: Contains the main entry point of the application.
+  - `main.py`: Responsible for setting up and starting the app.
 
 ## Downloading the Release
 
@@ -27,14 +29,14 @@ Download the latest version of PathfindingVisualizer from the Releases section o
 
 ## Dependencies
 
-Before running PathfindingVisualizer, ensure you have the following dependencies installed:
+Before running PathfindingVisualizer from the source, ensure you have the following dependencies installed:
 
 - `Kivy`: For the graphical user interface.
 - `numpy`: Used for mathematical operations and array manipulations.
 
 You can install these dependencies using pip:
 
-```
+```bash
 pip install kivy numpy
 ```
 
@@ -44,7 +46,8 @@ To run PathfindingVisualizer from source:
 
 1. Clone the repository.
 2. Install the required dependencies.
-3. Run `main.py`.
+3. Navigate to the root directory of the project.
+4. Run `main.py` with Python.
 
 ## Contributing
 
