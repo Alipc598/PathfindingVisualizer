@@ -1,26 +1,145 @@
 import sys
+
+import traceback
+def my_exception_hook(exctype, value, tb):
+    # Print the error and traceback
+    traceback.print_exception(exctype, value, tb)
+    # or you could add more complex error handling here (e.g., logging to a file)
+
+# Set the exception hook to your custom function
+sys.excepthook = my_exception_hook
+
+import random
 from kivy.app import App
+from kivy.core.window import Window
+
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
-from kivy.core.window import Window
-from kivy.clock import Clock
-from kivy.graphics import Color, Line, Ellipse
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+
+from kivy.logger import Logger
+Logger.setLevel('DEBUG')
+
+
+from kivy.clock import Clock
+from kivy.graphics import Color, Line, Ellipse
+
+
+from random import choice
 
 from algorithms import astar, branch_and_bound
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
 
-class PathfindingVisualizerApp(App):
-    title = 'KiviPathVis'
-    predefined_grids = predefined_grids
 
-    def build(self):
+
+class MatrixColumn(Label):
+    def __init__(self, **kwargs):
+        super(MatrixColumn, self).__init__(**kwargs)
+        self.font_size = '16sp'
+        self.color = (0, 1, 0, 1)  # Green color
+        self.markup = True  # Enable markup for color and styling
+        self.speed = random.uniform(0.1, 0.3)  # Random speed for each column
+        self.text_lines = [' '] * 20  # Start with empty lines
+        Clock.schedule_interval(self.update_text, self.speed)
+
+    def update_text(self, dt):
+        if random.randint(0, 1):
+            new_char = choice('01ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        else:
+            new_char = ' '  # Add empty space to simulate gaps
+        self.text_lines.pop(-1)  # Remove the last line
+        self.text_lines.insert(0, new_char)  # Add a new line at the top
+        self.text = '\n'.join(self.text_lines)  # Update the text to display
+
+
+class WelcomeScreen(Screen):
+    def __init__(self, **kwargs):
+        super(WelcomeScreen, self).__init__(**kwargs)
+        # Main layout for the screen
+        float_layout = FloatLayout()
+
+        # Matrix effect layout
+        matrix_layout = GridLayout(cols=20, size_hint_y=None)
+        matrix_layout.bind(minimum_height=matrix_layout.setter('height'))
+
+        # Add the matrix columns to the GridLayout
+        for _ in range(20):
+            column = MatrixColumn()
+            matrix_layout.add_widget(column)
+
+        float_layout.add_widget(matrix_layout)
+
+        # Add custom text labels with green color and invisible bounding boxes
+        custom_texts = ['WELCOME', 'by ALI GHAEDI', 'https://github.com/Alipc598']
+        for i, text in enumerate(custom_texts):
+            bbox_size = (Window.width, 40)  # Width of the screen and 40px height
+            label = Label(
+                text='[color=00ff00]{}[/color]'.format(text),
+                markup=True,
+                size_hint=(None, None),
+                size=bbox_size,
+                pos_hint={'center_x': 0.5, 'center_y': 0.6 - i * 0.1}
+            )
+            float_layout.add_widget(label)
+
+        # Button to proceed to the menu
+        proceed_button = Button(
+            text='START',
+            size_hint=(None, None),
+            size=(200, 50),
+            pos_hint={'center_x': 0.5, 'y': 0.1}
+        )
+        proceed_button.bind(on_press=self.go_to_menu)
+        float_layout.add_widget(proceed_button)
+
+        self.add_widget(float_layout)
+
+    def go_to_menu(self, instance):
+        self.manager.current = 'intro'
+
+
+class IntroductionScreen(Screen):
+    def __init__(self, **kwargs):
+        super(IntroductionScreen, self).__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        welcome_label = Label(text="Welcome to the Pathfinding Visualizer!", size_hint=(1, 0.8))
+        layout.add_widget(welcome_label)
+
+        predefined_button = Button(text="Predefined Scenarios", size_hint=(1, 0.1))
+        predefined_button.bind(on_press=self.go_to_predefined)
+        layout.add_widget(predefined_button)
+
+        manual_button = Button(text="Manual Grid", size_hint=(1, 0.1))
+        # For now, this button does nothing; you will implement this later
+        layout.add_widget(manual_button)
+
+        self.add_widget(layout)
+
+    def go_to_predefined(self, instance):
+        self.manager.current = 'main'  # Change to your main screen's name
+
+
+    def go_to_manual(self, instance):
+        # Placeholder for now; you'll implement this later
+        pass
+
+
+class MainScreen(Screen):
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(**kwargs)
+
+        
+        self.predefined_grids = predefined_grids
         main_layout = BoxLayout(orientation='horizontal')
 
         self.grid_layout = GridLayout(cols=5, rows=5, size_hint=(.7, 1))
@@ -30,8 +149,8 @@ class PathfindingVisualizerApp(App):
                 cell.position = (x, y)
                 self.grid_layout.add_widget(cell)
 
-        side_menu = BoxLayout(orientation='vertical', size_hint=(.3, 1))
 
+        side_menu = BoxLayout(orientation='vertical', size_hint=(.3, 1))
         self.grid_selector = Spinner(
             text='Select Grid',
             values=list(self.predefined_grids.keys()),
@@ -66,20 +185,16 @@ class PathfindingVisualizerApp(App):
             foreground_color=(1, 1, 1, 1),
             font_size='16sp'
         )
-
         side_menu.add_widget(self.console_output)
-
         sys.stdout = TextOutput(self.console_output)
         sys.stderr = TextOutput(self.console_output)
-
         main_layout.add_widget(self.grid_layout)
         main_layout.add_widget(side_menu)
 
-        Window.bind(on_resize=self.on_window_resize)
-        return main_layout
+        self.add_widget(main_layout)
 
-    def on_window_resize(self, instance, width, height):
-        self.clear_path()
+        def on_window_resize(self, instance, width, height):
+            self.clear_path()
 
     def on_grid_select(self, spinner, text):
         self.clear_path()
@@ -170,5 +285,19 @@ class PathfindingVisualizerApp(App):
             print(f"Execution time: {execution_time:.10f} seconds")
             self.display_path(path)
         else:
-            print("No path found.")
+            print("No path found.")    
 
+class PathfindingVisualizerApp(App):
+    title = 'KiviPathVis'
+    predefined_grids = predefined_grids
+
+    def build(self):
+        sm = ScreenManager()
+        ws = WelcomeScreen(name='welcome')
+        sm.add_widget(ws)
+        ms = MainScreen(name='main')
+        sm.add_widget(ms)
+        intro_screen = IntroductionScreen(name='intro')  # Renamed variable
+        sm.add_widget(intro_screen)
+        return sm
+    
