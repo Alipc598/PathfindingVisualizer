@@ -1,15 +1,14 @@
 import sys
 
-import traceback
-def my_exception_hook(exctype, value, tb):
-    # Print the error and traceback
-    traceback.print_exception(exctype, value, tb)
-    # or you could add more complex error handling here (e.g., logging to a file)
-
-# Set the exception hook to your custom function
-sys.excepthook = my_exception_hook
+#import traceback
+#def my_exception_hook(exctype, value, tb):
+    #traceback.print_exception(exctype, value, tb)
+    
+#sys.excepthook = my_exception_hook
 
 import random
+import webbrowser
+
 from kivy.app import App
 from kivy.core.window import Window
 
@@ -48,7 +47,7 @@ class MatrixColumn(Label):
         self.color = (0, 1, 0, 1)  # Green color
         self.markup = True  # Enable markup for color and styling
         self.speed = random.uniform(0.1, 0.3)  # Random speed for each column
-        self.text_lines = [' '] * 20  # Start with empty lines
+        self.text_lines = [' '] * 57  # Empty lines at start
         Clock.schedule_interval(self.update_text, self.speed)
 
     def update_text(self, dt):
@@ -64,7 +63,6 @@ class MatrixColumn(Label):
 class WelcomeScreen(Screen):
     def __init__(self, **kwargs):
         super(WelcomeScreen, self).__init__(**kwargs)
-        # Main layout for the screen
         float_layout = FloatLayout()
 
         # Matrix effect layout
@@ -78,12 +76,11 @@ class WelcomeScreen(Screen):
 
         float_layout.add_widget(matrix_layout)
 
-        # Add custom text labels with green color and invisible bounding boxes
         custom_texts = ['WELCOME', 'by ALI GHAEDI', 'https://github.com/Alipc598']
         for i, text in enumerate(custom_texts):
             bbox_size = (Window.width, 40)  # Width of the screen and 40px height
             label = Label(
-                text='[color=00ff00]{}[/color]'.format(text),
+                text='[color=ffffff]{}[/color]'.format(text),  # White
                 markup=True,
                 size_hint=(None, None),
                 size=bbox_size,
@@ -91,7 +88,6 @@ class WelcomeScreen(Screen):
             )
             float_layout.add_widget(label)
 
-        # Button to proceed to the menu
         proceed_button = Button(
             text='START',
             size_hint=(None, None),
@@ -120,17 +116,17 @@ class IntroductionScreen(Screen):
         layout.add_widget(predefined_button)
 
         manual_button = Button(text="Manual Grid", size_hint=(1, 0.1))
-        # For now, this button does nothing; you will implement this later
+        # For now, this button does nothing, will implement this later
         layout.add_widget(manual_button)
 
         self.add_widget(layout)
 
     def go_to_predefined(self, instance):
-        self.manager.current = 'main'  # Change to your main screen's name
+        self.manager.current = 'main'  
 
 
     def go_to_manual(self, instance):
-        # Placeholder for now; you'll implement this later
+        # Placeholder, will implement later
         pass
 
 
@@ -138,7 +134,6 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
 
-        
         self.predefined_grids = predefined_grids
         main_layout = BoxLayout(orientation='horizontal')
 
@@ -148,7 +143,6 @@ class MainScreen(Screen):
                 cell = Cell()
                 cell.position = (x, y)
                 self.grid_layout.add_widget(cell)
-
 
         side_menu = BoxLayout(orientation='vertical', size_hint=(.3, 1))
         self.grid_selector = Spinner(
@@ -193,7 +187,9 @@ class MainScreen(Screen):
 
         self.add_widget(main_layout)
 
-        def on_window_resize(self, instance, width, height):
+        Window.bind(on_resize=self.on_window_resize)
+
+    def on_window_resize(self, instance, width, height):
             self.clear_path()
 
     def on_grid_select(self, spinner, text):
@@ -220,9 +216,8 @@ class MainScreen(Screen):
     def get_grid_state(self):
         return get_grid_state(self.grid_layout)
 
-    def clear_path(self):
+    def clear_path(self, *args):
         self.grid_layout.canvas.after.clear()
-        self.path_instructions = []
 
     def display_path(self, path):
         self.path_index = 0
@@ -297,7 +292,7 @@ class PathfindingVisualizerApp(App):
         sm.add_widget(ws)
         ms = MainScreen(name='main')
         sm.add_widget(ms)
-        intro_screen = IntroductionScreen(name='intro')  # Renamed variable
+        intro_screen = IntroductionScreen(name='intro')  
         sm.add_widget(intro_screen)
         return sm
     
