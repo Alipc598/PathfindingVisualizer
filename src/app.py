@@ -69,7 +69,6 @@ class WelcomeScreen(Screen):
         matrix_layout = GridLayout(cols=20, size_hint_y=None)
         matrix_layout.bind(minimum_height=matrix_layout.setter('height'))
 
-        # Add the matrix columns to the GridLayout
         for _ in range(20):
             column = MatrixColumn()
             matrix_layout.add_widget(column)
@@ -78,7 +77,7 @@ class WelcomeScreen(Screen):
 
         custom_texts = ['WELCOME', 'by ALI GHAEDI', 'https://github.com/Alipc598']
         for i, text in enumerate(custom_texts):
-            bbox_size = (Window.width, 40)  # Width of the screen and 40px height
+            bbox_size = (Window.width, 40)  
             label = Label(
                 text='[color=ffffff]{}[/color]'.format(text),  # White
                 markup=True,
@@ -108,6 +107,7 @@ class IntroductionScreen(Screen):
         super(IntroductionScreen, self).__init__(**kwargs)
         layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
 
+
         welcome_label = Label(text="Welcome to the Pathfinding Visualizer!", size_hint=(1, 0.8))
         layout.add_widget(welcome_label)
 
@@ -116,7 +116,7 @@ class IntroductionScreen(Screen):
         layout.add_widget(predefined_button)
 
         manual_button = Button(text="Manual Grid", size_hint=(1, 0.1))
-        # For now, this button does nothing, will implement this later
+        manual_button.bind(on_press=self.go_to_manual)
         layout.add_widget(manual_button)
 
         self.add_widget(layout)
@@ -126,8 +126,10 @@ class IntroductionScreen(Screen):
 
 
     def go_to_manual(self, instance):
-        # Placeholder, will implement later
-        pass
+        popup = Popup(title='Feature Under Development',
+                      content=Label(text='The Manual Grid feature is currently in progress and will be available soon.'),
+                      size_hint=(None, None), size=(800, 200)) 
+        popup.open()
 
 
 class MainScreen(Screen):
