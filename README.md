@@ -49,6 +49,15 @@ To run PathfindingVisualizer from source:
 3. Navigate to the root directory of the project.
 4. Run `main.py` with Python.
 
+## Building Standalone Executable from Source
+
+To create a standalone executable from the source code, you can use PyInstaller with the following command:
+
+```shell
+pyinstaller --onefile --windowed --paths=./src main.py
+```
+This will generate a single executable file in the dist directory.
+
 ## Contributing
 
 Contributions to the PathfindingVisualizer are welcome. Please read the contributing guidelines before making a pull request.
