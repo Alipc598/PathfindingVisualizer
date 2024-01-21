@@ -38,7 +38,7 @@ You can install these dependencies using pip:
 
 ```bash
 pip install kivy numpy
-```
+``` 
 
 ## Installation
 
