@@ -25,7 +25,7 @@ from kivy.graphics import Color, Line, Ellipse
 
 from random import choice
 
-from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search, jump_point_search, dynamic_astar, theta_star, bfs, dfs
+from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search, hierarchical_pathfinding, jump_point_search, dynamic_astar, theta_star, bfs, dfs, swarm_algorithm
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
@@ -142,7 +142,7 @@ class MainScreen(Screen):
 
         algorithm_spinner = Spinner(
             text='Select Algorithm',
-            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Jump Point Search', 'Dynamic A*', 'Theta*', 'Breadth-First Search (BFS)', 'Depth-First Search (DFS)'),
+            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Hierarchical Pathfinding A*', 'Jump Point Search', 'Dynamic A*', 'Theta*', 'Breadth-First Search (BFS)', 'Depth-First Search (DFS)', 'Swarm Algorithm'),
             size_hint=(1, None),
             height=44
         )
@@ -275,6 +275,8 @@ class MainScreen(Screen):
                 path, explored_nodes, execution_time = dijkstra(start_point, goal_point, grid_state)
             elif self.selected_algorithm == 'Greedy Best First Search':
                 path, explored_nodes, execution_time = greedy_best_first_search(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Hierarchical Pathfinding A*':
+                path, explored_nodes, execution_time = hierarchical_pathfinding(start_point, goal_point, grid_state)
             elif self.selected_algorithm == 'Jump Point Search':
                 path, explored_nodes, execution_time = jump_point_search(start_point, goal_point, grid_state)
             elif self.selected_algorithm == 'Dynamic A*':
@@ -285,6 +287,8 @@ class MainScreen(Screen):
                 path, explored_nodes, execution_time = bfs(start_point, goal_point, grid_state)
             elif self.selected_algorithm == 'Depth-First Search (DFS)':
                 path, explored_nodes, execution_time = dfs(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Swarm Algorithm':
+                path, explored_nodes, execution_time = swarm_algorithm(start_point, goal_point, grid_state)
 
 
             if path:

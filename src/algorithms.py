@@ -300,6 +300,79 @@ def greedy_best_first_search(start, goal, grid):
     execution_time = end_time - start_time
     return [], nodes_explored, execution_time
 
+def hierarchical_pathfinding(start, goal, grid):
+    start_time = time.perf_counter()
+    nodes_explored = set()
+
+    open_set = set([start])
+    closed_set = set()
+
+    came_from = {}
+
+    g_score = {start: 0}
+    f_score = {start: heuristic(start, goal)}
+
+    while open_set:
+        current = min(open_set, key=lambda o: f_score[o])
+        if current == goal:
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            end_time = time.perf_counter()
+            execution_time = end_time - start_time
+            return path, nodes_explored, execution_time
+
+        open_set.remove(current)
+        closed_set.add(current)
+        nodes_explored.add(current)
+
+        print("\n" + "="*40)
+        print(f"Current node: {current}")
+        print("="*40)
+
+        for neighbor in get_neighbors(current, grid):
+            if neighbor in closed_set:
+                continue
+
+            if current in came_from and line_of_sight(grid, came_from[current], neighbor):
+                tentative_g_score = g_score[came_from[current]] + heuristic(came_from[current], neighbor)
+            else:
+                tentative_g_score = g_score[current] + 1
+
+            if neighbor not in open_set:
+                open_set.add(neighbor)
+                added_to_open_set = "Yes"
+            elif tentative_g_score >= g_score.get(neighbor, float('inf')):
+                continue
+            else:
+                added_to_open_set = "No"
+
+            # User-friendly debug prints to understand the decision-making process
+            print("-" * 40)
+            print(f"Evaluating neighbor: {neighbor}")
+            print(f"tentative_g_score: {tentative_g_score}")
+            print(f"current g_score of neighbor: {g_score.get(neighbor, float('inf'))}")
+            print(f"Added to open set: {added_to_open_set}")
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal)
+
+            print(f"Updated g_score: {g_score[neighbor]}")
+            print(f"Updated f_score: {f_score[neighbor]}")
+            print("-" * 40)
+
+        print("Current open set: ", open_set)
+        print("Current closed set: ", closed_set)
+        print("="*40 + "\n")
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    return [], nodes_explored, execution_time
+
 
 def jump_point_search(start, goal, grid):
     def get_jump_point(parent, node, grid):
@@ -487,28 +560,6 @@ def dynamic_astar(start, goal, grid):
     execution_time = end_time - start_time
     return [], nodes_explored, execution_time
 
-def line_of_sight(grid, start, end):
-    x0, y0 = start
-    x1, y1 = end
-    dx = abs(x1 - x0)
-    dy = abs(y1 - y0)
-    sx = 1 if x0 < x1 else -1
-    sy = 1 if y0 < y1 else -1
-    err = dx - dy
-
-    while True:
-        if grid[y0][x0] == 1:
-            return False
-        if (x0, y0) == (x1, y1):
-            return True
-        e2 = err * 2
-        if e2 > -dy:
-            err -= dy
-            x0 += sx
-        if e2 < dx:
-            err += dx
-            y0 += sy
-
 def theta_star(start, goal, grid):
     start_time = time.perf_counter()
     nodes_explored = set()
@@ -681,4 +732,74 @@ def dfs(start, goal, grid):
     print("\n" + "="*40)
     print("No Path Found")
     print("="*40)
+    return [], nodes_explored, execution_time
+
+def swarm_algorithm(start, goal, grid):
+    start_time = time.perf_counter()
+    nodes_explored = set()
+
+    open_set = set([start])
+    closed_set = set()
+
+    came_from = {}
+
+    g_score = {start: 0}
+    f_score = {start: heuristic(start, goal)}
+
+    while open_set:
+        current = min(open_set, key=lambda o: f_score[o])
+        if current == goal:
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            end_time = time.perf_counter()
+            execution_time = end_time - start_time
+            return path, nodes_explored, execution_time
+
+        open_set.remove(current)
+        closed_set.add(current)
+        nodes_explored.add(current)
+
+        print("\n" + "="*40)
+        print(f"Current node: {current}")
+        print("="*40)
+
+        for neighbor in get_neighbors(current, grid):
+            if neighbor in closed_set:
+                continue
+
+            tentative_g_score = g_score[current] + 1
+
+            if neighbor not in open_set:
+                open_set.add(neighbor)
+                added_to_open_set = "Yes"
+            elif tentative_g_score >= g_score.get(neighbor, float('inf')):
+                continue
+            else:
+                added_to_open_set = "No"
+
+            # User-friendly debug prints to understand the decision-making process
+            print("-" * 40)
+            print(f"Evaluating neighbor: {neighbor}")
+            print(f"tentative_g_score: {tentative_g_score}")
+            print(f"current g_score of neighbor: {g_score.get(neighbor, float('inf'))}")
+            print(f"Added to open set: {added_to_open_set}")
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal)
+
+            print(f"Updated g_score: {g_score[neighbor]}")
+            print(f"Updated f_score: {f_score[neighbor]}")
+            print("-" * 40)
+
+        print("Current open set: ", open_set)
+        print("Current closed set: ", closed_set)
+        print("="*40 + "\n")
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
     return [], nodes_explored, execution_time
