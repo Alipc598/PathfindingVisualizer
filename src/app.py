@@ -33,7 +33,7 @@ from kivy.graphics import Color, Line, Ellipse
 
 from random import choice
 
-from algorithms import astar, branch_and_bound
+from algorithms import astar, branch_and_bound, dijkstra
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
@@ -58,6 +58,7 @@ class MatrixColumn(Label):
         self.text_lines.pop(-1)  # Remove the last line
         self.text_lines.insert(0, new_char)  # Add a new line at the top
         self.text = '\n'.join(self.text_lines)  # Update the text to display
+
 
 
 class WelcomeScreen(Screen):
@@ -157,7 +158,7 @@ class MainScreen(Screen):
 
         algorithm_spinner = Spinner(
             text='Select Algorithm',
-            values=('A*', 'Branch and Bound'),
+            values=('A*', 'Branch and Bound', 'Dijkstra'),
             size_hint=(1, None),
             height=44
         )
@@ -192,7 +193,7 @@ class MainScreen(Screen):
         Window.bind(on_resize=self.on_window_resize)
 
     def on_window_resize(self, instance, width, height):
-            self.clear_path()
+        self.clear_path()
 
     def on_grid_select(self, spinner, text):
         self.clear_path()
@@ -275,6 +276,8 @@ class MainScreen(Screen):
             path, nodes_explored, execution_time = astar(start_point, goal_point, grid_state)
         elif self.selected_algorithm == 'Branch and Bound':
             path, nodes_explored, execution_time = branch_and_bound(start_point, goal_point, grid_state)
+        elif self.selected_algorithm == 'Dijkstra':
+            path, nodes_explored, execution_time = dijkstra(start_point, goal_point, grid_state)
 
         if path:
             print(f"Path found: {path}")
@@ -282,7 +285,9 @@ class MainScreen(Screen):
             print(f"Execution time: {execution_time:.10f} seconds")
             self.display_path(path)
         else:
-            print("No path found.")    
+            print("No path found.")
+
+   
 
 class PathfindingVisualizerApp(App):
     title = 'KiviPathVis'

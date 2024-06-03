@@ -108,3 +108,49 @@ def branch_and_bound(start, goal, grid):
     end_time = time.time()
     execution_time = end_time - start_time
     return [], nodes_explored, execution_time
+
+def dijkstra(start, goal, grid):
+    start_time = time.perf_counter()
+    nodes_explored = 0
+
+    open_set = set([start])
+    closed_set = set()
+
+    came_from = {}
+
+    g_score = {node: float('inf') for row in grid for node in row}
+    g_score[start] = 0
+
+    while open_set:
+        current = min(open_set, key=lambda x: g_score[x])
+        if current == goal:
+            path = []
+            while current != start:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            end_time = time.perf_counter()
+            execution_time = end_time - start_time
+            return path, nodes_explored, execution_time
+
+        open_set.remove(current)
+        closed_set.add(current)
+        nodes_explored += 1
+
+        for neighbor in get_neighbors(current, grid):
+            if neighbor in closed_set:
+                continue
+            tentative_g_score = g_score[current] + 1
+
+            if neighbor not in open_set:
+                open_set.add(neighbor)
+            elif tentative_g_score >= g_score[neighbor]:
+                continue
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    return [], nodes_explored, execution_time
