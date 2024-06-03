@@ -1,12 +1,7 @@
 import sys
-
-#import traceback
-#def my_exception_hook(exctype, value, tb):
-    #traceback.print_exception(exctype, value, tb)
-    
-#sys.excepthook = my_exception_hook
-
+import re 
 import random
+import os
 import webbrowser
 
 from kivy.app import App
@@ -19,26 +14,21 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 
 from kivy.logger import Logger
 Logger.setLevel('DEBUG')
 
-
 from kivy.clock import Clock
 from kivy.graphics import Color, Line, Ellipse
 
-
 from random import choice
 
-from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search, jump_point_search
+from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search, jump_point_search, dynamic_astar, theta_star, bfs, dfs
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
-
-
 
 class MatrixColumn(Label):
     def __init__(self, **kwargs):
@@ -58,8 +48,6 @@ class MatrixColumn(Label):
         self.text_lines.pop(-1)  # Remove the last line
         self.text_lines.insert(0, new_char)  # Add a new line at the top
         self.text = '\n'.join(self.text_lines)  # Update the text to display
-
-
 
 class WelcomeScreen(Screen):
     def __init__(self, **kwargs):
@@ -102,12 +90,10 @@ class WelcomeScreen(Screen):
     def go_to_menu(self, instance):
         self.manager.current = 'intro'
 
-
 class IntroductionScreen(Screen):
     def __init__(self, **kwargs):
         super(IntroductionScreen, self).__init__(**kwargs)
         layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
-
 
         welcome_label = Label(text="Welcome to the Pathfinding Visualizer!", size_hint=(1, 0.8))
         layout.add_widget(welcome_label)
@@ -124,7 +110,6 @@ class IntroductionScreen(Screen):
 
     def go_to_predefined(self, instance):
         self.manager.current = 'main'  
-
 
     def go_to_manual(self, instance):
         popup = Popup(title='Feature Under Development',
@@ -157,7 +142,7 @@ class MainScreen(Screen):
 
         algorithm_spinner = Spinner(
             text='Select Algorithm',
-            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Jump Point Search'),
+            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Jump Point Search', 'Dynamic A*', 'Theta*', 'Breadth-First Search (BFS)', 'Depth-First Search (DFS)'),
             size_hint=(1, None),
             height=44
         )
@@ -182,6 +167,15 @@ class MainScreen(Screen):
             font_size='16sp'
         )
         side_menu.add_widget(self.console_output)
+
+        save_log_button = Button(
+            text='Save Log',
+            size_hint=(1, None),
+            height=44
+        )
+        save_log_button.bind(on_press=self.save_console_output)
+        side_menu.add_widget(save_log_button)
+
         sys.stdout = TextOutput(self.console_output)
         sys.stderr = TextOutput(self.console_output)
         main_layout.add_widget(self.grid_layout)
@@ -251,6 +245,7 @@ class MainScreen(Screen):
         self.selected_algorithm = text
 
     def run_algorithm(self, instance):
+        self.clear_console()  # Clear the console before running the algorithm
         self.clear_path()
         Clock.unschedule(self.animate_path)
 
@@ -271,27 +266,72 @@ class MainScreen(Screen):
             print("Start or goal coordinates are out of grid bounds.")
             return
 
-        if self.selected_algorithm == 'A*':
-            path, nodes_explored, execution_time = astar(start_point, goal_point, grid_state)
-        elif self.selected_algorithm == 'Branch and Bound':
-            path, nodes_explored, execution_time = branch_and_bound(start_point, goal_point, grid_state)
-        elif self.selected_algorithm == 'Dijkstra':
-            path, nodes_explored, execution_time = dijkstra(start_point, goal_point, grid_state)
-        elif self.selected_algorithm == 'Greedy Best First Search':
-            path, nodes_explored, execution_time = greedy_best_first_search(start_point, goal_point, grid_state)
-        elif self.selected_algorithm == 'Jump Point Search':
-            path, nodes_explored, execution_time = jump_point_search(start_point, goal_point, grid_state)
+        try:
+            if self.selected_algorithm == 'A*':
+                path, explored_nodes, execution_time = astar(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Branch and Bound':
+                path, explored_nodes, execution_time = branch_and_bound(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Dijkstra':
+                path, explored_nodes, execution_time = dijkstra(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Greedy Best First Search':
+                path, explored_nodes, execution_time = greedy_best_first_search(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Jump Point Search':
+                path, explored_nodes, execution_time = jump_point_search(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Dynamic A*':
+                path, explored_nodes, execution_time = dynamic_astar(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Theta*':
+                path, explored_nodes, execution_time = theta_star(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Breadth-First Search (BFS)':
+                path, explored_nodes, execution_time = bfs(start_point, goal_point, grid_state)
+            elif self.selected_algorithm == 'Depth-First Search (DFS)':
+                path, explored_nodes, execution_time = dfs(start_point, goal_point, grid_state)
 
-        if path:
-            print(f"Path found: {path}")
-            print(f"Nodes explored: {nodes_explored}")
-            print(f"Execution time: {execution_time:.10f} seconds")
-            self.display_path(path)
-        else:
-            print("No path found.")
 
+            if path:
+                print(f"Path found: {path}")
+                print(f"Nodes explored: {len(explored_nodes)}")
+                print(f"Execution time: {execution_time:.10f} seconds")
+                self.display_explored_nodes(explored_nodes)  # Display explored nodes
+                self.display_path(path)
+            else:
+                print("No path found.")
+        except Exception as e:
+            print(f"Error running algorithm: {e}")
 
-  
+    def display_explored_nodes(self, explored_nodes):
+        for node in explored_nodes:
+            x, y = node
+            cell = self.grid_layout.children[-(y * 5 + x + 1)]
+            with self.grid_layout.canvas.after:
+                Color(1, 1, 0, mode='rgba')  # Yellow for explored nodes
+                d = min(cell.width, cell.height) / 2
+                Ellipse(pos=(cell.center_x - d / 2, cell.center_y - d / 2), size=(d, d))
+
+    def save_console_output(self, instance):
+        try:
+            # Define the directory for console logs
+            log_dir = 'Console Logs'
+            
+            # Create the directory if it does not exist
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+
+            # Generate the filename and full path
+            scenario_name = self.grid_selector.text.replace(' ', '_')
+            algorithm_name = re.sub(r'[<>:"/\\|?*]', '_', self.selected_algorithm.replace(' ', '_'))
+            filename = f"{scenario_name}_{algorithm_name}.txt"
+            file_path = os.path.join(log_dir, filename)
+            
+            # Save the console output to the specified file
+            with open(file_path, 'w') as f:
+                f.write(self.console_output.text)
+            print(f"Console output saved to {file_path}")
+        except Exception as e:
+            print(f"Error saving console output: {e}")
+
+    def clear_console(self):
+        self.console_output.text = ''
+
 class PathfindingVisualizerApp(App):
     title = 'KiviPathVis'
     predefined_grids = predefined_grids
@@ -305,4 +345,3 @@ class PathfindingVisualizerApp(App):
         intro_screen = IntroductionScreen(name='intro')  
         sm.add_widget(intro_screen)
         return sm
-    
