@@ -33,7 +33,7 @@ from kivy.graphics import Color, Line, Ellipse
 
 from random import choice
 
-from algorithms import astar, branch_and_bound, dijkstra
+from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
@@ -158,7 +158,7 @@ class MainScreen(Screen):
 
         algorithm_spinner = Spinner(
             text='Select Algorithm',
-            values=('A*', 'Branch and Bound', 'Dijkstra'),
+            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search'),
             size_hint=(1, None),
             height=44
         )
@@ -278,6 +278,8 @@ class MainScreen(Screen):
             path, nodes_explored, execution_time = branch_and_bound(start_point, goal_point, grid_state)
         elif self.selected_algorithm == 'Dijkstra':
             path, nodes_explored, execution_time = dijkstra(start_point, goal_point, grid_state)
+        elif self.selected_algorithm == 'Greedy Best First Search':
+            path, nodes_explored, execution_time = greedy_best_first_search(start_point, goal_point, grid_state)
 
         if path:
             print(f"Path found: {path}")
@@ -287,8 +289,7 @@ class MainScreen(Screen):
         else:
             print("No path found.")
 
-   
-
+  
 class PathfindingVisualizerApp(App):
     title = 'KiviPathVis'
     predefined_grids = predefined_grids

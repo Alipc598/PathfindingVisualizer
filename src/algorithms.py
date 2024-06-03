@@ -15,16 +15,6 @@ def get_neighbors(node, grid):
                 neighbors.append((nx, ny))
     return neighbors
 
-def get_neighbors(node, grid):
-    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
-    neighbors = []
-    x, y = node
-    for dx, dy in directions:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < len(grid) and 0 <= ny < len(grid[0]):
-            if grid[ny][nx] == 0:  
-                neighbors.append((nx, ny))
-    return neighbors
 
 def astar(start, goal, grid):
     start_time = time.perf_counter()
@@ -154,3 +144,47 @@ def dijkstra(start, goal, grid):
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     return [], nodes_explored, execution_time
+
+def greedy_best_first_search(start, goal, grid):
+    start_time = time.perf_counter()
+    nodes_explored = 0
+
+    open_set = set([start])
+    closed_set = set()
+
+    came_from = {}
+
+    f_score = {node: float('inf') for row in grid for node in row}
+    f_score[start] = heuristic(start, goal)
+
+    while open_set:
+        current = min(open_set, key=lambda x: f_score[x])
+        if current == goal:
+            path = []
+            while current != start:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            end_time = time.perf_counter()
+            execution_time = end_time - start_time
+            return path, nodes_explored, execution_time
+
+        open_set.remove(current)
+        closed_set.add(current)
+        nodes_explored += 1
+
+        for neighbor in get_neighbors(current, grid):
+            if neighbor in closed_set:
+                continue
+
+            if neighbor not in open_set:
+                open_set.add(neighbor)
+                came_from[neighbor] = current
+                f_score[neighbor] = heuristic(neighbor, goal)
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    return [], nodes_explored, execution_time
+
+
