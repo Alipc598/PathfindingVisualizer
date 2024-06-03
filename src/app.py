@@ -33,7 +33,7 @@ from kivy.graphics import Color, Line, Ellipse
 
 from random import choice
 
-from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search
+from algorithms import astar, branch_and_bound, dijkstra, greedy_best_first_search, jump_point_search
 from grid_components import Cell
 from utilities import TextOutput, get_grid_state
 from constants import predefined_grids
@@ -132,7 +132,6 @@ class IntroductionScreen(Screen):
                       size_hint=(None, None), size=(800, 200)) 
         popup.open()
 
-
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -158,7 +157,7 @@ class MainScreen(Screen):
 
         algorithm_spinner = Spinner(
             text='Select Algorithm',
-            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search'),
+            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Jump Point Search'),
             size_hint=(1, None),
             height=44
         )
@@ -248,7 +247,7 @@ class MainScreen(Screen):
         popup.open()
 
     def on_algorithm_select(self, spinner, text):
-        self.clear_path()  
+        self.clear_path()
         self.selected_algorithm = text
 
     def run_algorithm(self, instance):
@@ -280,6 +279,8 @@ class MainScreen(Screen):
             path, nodes_explored, execution_time = dijkstra(start_point, goal_point, grid_state)
         elif self.selected_algorithm == 'Greedy Best First Search':
             path, nodes_explored, execution_time = greedy_best_first_search(start_point, goal_point, grid_state)
+        elif self.selected_algorithm == 'Jump Point Search':
+            path, nodes_explored, execution_time = jump_point_search(start_point, goal_point, grid_state)
 
         if path:
             print(f"Path found: {path}")
@@ -288,6 +289,7 @@ class MainScreen(Screen):
             self.display_path(path)
         else:
             print("No path found.")
+
 
   
 class PathfindingVisualizerApp(App):
