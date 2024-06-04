@@ -6,6 +6,10 @@ import webbrowser
 
 from kivy.app import App
 from kivy.core.window import Window
+from kivy.uix.widget import Widget
+
+from kivy.uix.dropdown import DropDown
+
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -127,11 +131,11 @@ class IntroductionScreen(Screen):
         map_info_layout.add_widget(map_info_label)
 
         colors = [
-            ("Red Circle: Obstacle", (1, 0, 0, 1)),
-            ("Green Circle: Start Point", (0, 1, 0, 1)),
-            ("Blue Circle: Destination", (0, 0, 0.5, 1)),
-            ("Yellow Circle: Explored Node", (1, 1, 0, 1)),
-            ("Blue Line: Path", (0, 0, 1, 1))
+            ("Obstacle", (1, 0, 0, 1)),
+            ("Start Point", (0, 1, 0, 1)),
+            ("Destination", (0, 0, 0.5, 1)),
+            ("Explored Node", (1, 1, 0, 1)),
+            ("Path", (0, 0, 1, 1))
         ]
 
         for text, color in colors:
@@ -162,6 +166,11 @@ class IntroductionScreen(Screen):
         online_link_button.bind(on_press=self.open_online_link)
         button_layout.add_widget(online_link_button)
 
+        # Add the educational videos button
+        edu_videos_button = Button(text="Educational Videos", size_hint=(1, 0.1))
+        edu_videos_button.bind(on_press=self.open_edu_videos)
+        button_layout.add_widget(edu_videos_button)
+
         predefined_button = Button(text="Predefined Scenarios", size_hint=(1, 0.1))
         predefined_button.bind(on_press=self.go_to_predefined)
         button_layout.add_widget(predefined_button)
@@ -178,15 +187,46 @@ class IntroductionScreen(Screen):
         self.manager.current = 'main'
 
     def go_to_manual(self, instance):
-        popup = Popup(title='Feature Under Development',
-                      content=Label(text='The Manual Grid feature is currently in progress and will be available soon.'),
-                      size_hint=(None, None), size=(800, 200))
-        popup.open()
+        manual_screen = ManualGridScreen(name='manual_grid')
+        self.manager.add_widget(manual_screen)
+        self.manager.current = 'manual_grid'
 
     def open_online_link(self, instance):
         webbrowser.open("https://www.redblobgames.com/pathfinding/a-star/introduction.html")
 
+    def open_edu_videos(self, instance):
+        dropdown = DropDown()
+        youtube_links = {
+            "A*": "https://www.youtube.com/watch?v=JtiK0DOeI4A",
+            "Branch and Bound": "https://www.youtube.com/watch?v=3RBNPc0_Q6g",
+            "Dijkstra": "https://www.youtube.com/watch?v=GazC3A4OQTE",
+            "Greedy Best First Search": "https://www.youtube.com/watch?v=dv1m3L6QXWs",
+            "Hierarchical Pathfinding A*": "https://www.youtube.com/watch?v=zrX-67WkK6Y",
+            "Jump Point Search": "https://www.youtube.com/watch?v=__ZLnTwYNPk",
+            "Dynamic A*": "https://www.youtube.com/watch?v=JtiK0DOeI4A",
+            "Theta*": "https://www.youtube.com/watch?v=mAaYVTedqPQ",
+            "Breadth-First Search (BFS)": "https://www.youtube.com/watch?v=oDqjPvD54Ss",
+            "Depth-First Search (DFS)": "https://www.youtube.com/watch?v=7fujbpJ0LB4",
+            "Swarm Algorithm": "https://www.youtube.com/watch?v=SMq-dy8Hx-Y"
+        }
 
+        for title, url in youtube_links.items():
+            btn = Button(text=title, size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+            dropdown.add_widget(btn)
+
+        mainbutton = Button(text='Select Algorithm', size_hint=(1, None), height=44)
+        mainbutton.bind(on_release=dropdown.open)
+        dropdown.bind(on_select=lambda instance, x: self.open_youtube_link(youtube_links[x]))
+
+        popup_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        popup_layout.add_widget(mainbutton)
+
+        popup = Popup(title='Educational Videos', content=popup_layout, size_hint=(None, None), size=(600, 200))
+        popup.open()
+
+    def open_youtube_link(self, url):
+        webbrowser.open(url)
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -195,7 +235,7 @@ class MainScreen(Screen):
         self.predefined_grids = predefined_grids
         main_layout = BoxLayout(orientation='horizontal')
 
-        self.grid_layout = GridLayout(cols=10, rows=10, size_hint=(.7, 1))
+        self.grid_layout = GridLayout(cols=10, rows=10, size_hint=(.7, 1))   #Grid size
         for y in range(10):
             for x in range(10):
                 cell = Cell()
@@ -264,6 +304,13 @@ class MainScreen(Screen):
 
         Window.bind(on_resize=self.on_window_resize)
 
+    def on_touch_down(self, touch):
+        if self.grid_layout.collide_point(*touch.pos):
+            # Touch is within the grid, disable left and right clicks
+            if touch.button == 'left' or touch.button == 'right':
+                return True  # Consume the touch event
+        return super(MainScreen, self).on_touch_down(touch)
+
     def go_to_intro(self, instance):
         self.manager.transition.direction = 'right'
         self.manager.current = 'intro'
@@ -281,7 +328,7 @@ class MainScreen(Screen):
         self.goal_point = grid_info['goal']
         grid_array = grid_info['grid']
 
-        for y in range(10):
+        for y in range(10): #Grid size
             for x in range(10):
                 cell = self.grid_layout.children[-(y * 10 + x + 1)]
                 cell.reset_state()
@@ -306,14 +353,14 @@ class MainScreen(Screen):
     def animate_path(self, dt):
         if self.path_index < len(self.path):
             x, y = self.path[self.path_index]
-            cell = self.grid_layout.children[-(y * 10 + x + 1)]
+            cell = self.grid_layout.children[-(y * 10 + x + 1)] #Grid size
             with self.grid_layout.canvas.after:
                 Color(0, 0, 1, mode='rgba')
                 d = min(cell.width, cell.height) / 4
                 Ellipse(pos=(cell.center_x - d / 2, cell.center_y - d / 2), size=(d, d))
                 if self.path_index > 0:
                     prev_x, prev_y = self.path[self.path_index - 1]
-                    prev_cell = self.grid_layout.children[-(prev_y * 10 + prev_x + 1)]
+                    prev_cell = self.grid_layout.children[-(prev_y * 10 + prev_x + 1)] #Grid size
                     Line(points=[prev_cell.center_x, prev_cell.center_y, cell.center_x, cell.center_y], width=1.5)
             self.path_index += 1
         else:
@@ -393,7 +440,7 @@ class MainScreen(Screen):
     def display_explored_nodes(self, explored_nodes):
         for node in explored_nodes:
             x, y = node
-            cell = self.grid_layout.children[-(y * 10 + x + 1)]
+            cell = self.grid_layout.children[-(y * 10 + x + 1)] #Grid size
             with self.grid_layout.canvas.after:
                 Color(1, 1, 0, mode='rgba')  # Yellow for explored nodes
                 d = min(cell.width, cell.height) / 2
@@ -424,16 +471,171 @@ class MainScreen(Screen):
     def clear_console(self):
         self.console_output.text = ''
 
+class ManualGridScreen(Screen):
+    def __init__(self, **kwargs):
+        super(ManualGridScreen, self).__init__(**kwargs)
+
+        self.mode = 'start'  # Initialize mode
+
+        self.grid_layout = GridLayout(cols=10, rows=10, size_hint=(.7, 1))
+
+        for y in range(10):
+            for x in range(10):
+                cell = Cell()
+                cell.position = (x, y)
+                self.grid_layout.add_widget(cell)
+
+        side_menu = BoxLayout(orientation='vertical', size_hint=(.3, 1))
+
+        mode_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=44)
+        start_button = Button(text='Start', size_hint=(1, None), height=44, background_color=(0, 1, 0, 1))
+        start_button.bind(on_press=lambda x: self.set_mode('start'))
+        goal_button = Button(text='Goal', size_hint=(1, None), height=44, background_color=(0, 0, 1, 1))
+        goal_button.bind(on_press=lambda x: self.set_mode('goal'))
+        obstacle_button = Button(text='Obstacle', size_hint=(1, None), height=44, background_color=(1, 0, 0, 1))
+        obstacle_button.bind(on_press=lambda x: self.set_mode('obstacle'))
+        reset_button = Button(text='Reset Grid', size_hint=(1, None), height=44)
+        reset_button.bind(on_press=self.reset_grid)
+
+        mode_layout.add_widget(start_button)
+        mode_layout.add_widget(goal_button)
+        mode_layout.add_widget(obstacle_button)
+        side_menu.add_widget(mode_layout)
+        side_menu.add_widget(reset_button)
+
+        algorithm_spinner = Spinner(
+            text='Select Algorithm',
+            values=('A*', 'Branch and Bound', 'Dijkstra', 'Greedy Best First Search', 'Hierarchical Pathfinding A*', 'Jump Point Search', 'Dynamic A*', 'Theta*', 'Breadth-First Search (BFS)', 'Depth-First Search (DFS)', 'Swarm Algorithm'),
+            size_hint=(1, None),
+            height=44
+        )
+        algorithm_spinner.bind(text=self.on_algorithm_select)
+
+        run_button = Button(
+            text='Run',
+            size_hint=(1, None),
+            height=44
+        )
+        run_button.bind(on_press=self.run_algorithm)
+
+        self.console_output = TextInput(
+            readonly=True,
+            size_hint=(1, 0.3),
+            background_color=(0, 0, 0, 1),
+            foreground_color=(1, 1, 1, 1),
+            font_size='16sp'
+        )
+
+        save_log_button = Button(
+            text='Save Log',
+            size_hint=(1, None),
+            height=44
+        )
+        save_log_button.bind(on_press=self.save_console_output)
+
+        back_button = Button(
+            text='Back',
+            size_hint=(1, None),
+            height=44
+        )
+        back_button.bind(on_press=self.go_to_intro)
+
+        side_menu.add_widget(algorithm_spinner)
+        side_menu.add_widget(run_button)
+        side_menu.add_widget(self.console_output)
+        side_menu.add_widget(save_log_button)
+        side_menu.add_widget(back_button)
+
+        sys.stdout = TextOutput(self.console_output)
+        sys.stderr = TextOutput(self.console_output)
+        main_layout = BoxLayout(orientation='horizontal')
+        main_layout.add_widget(self.grid_layout)
+        main_layout.add_widget(side_menu)
+
+        self.add_widget(main_layout)
+
+        Window.bind(on_resize=self.on_window_resize)
+
+    def set_mode(self, mode):
+        self.mode = mode
+
+    def reset_grid(self, instance):
+        for cell in self.grid_layout.children:
+            cell.reset_state()
+
+    def go_to_intro(self, instance):
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'intro'
+        Clock.schedule_once(self.remove_self, 0.1)
+
+    def remove_self(self, dt):
+        self.manager.remove_widget(self)
+
+    def on_window_resize(self, instance, width, height):
+        self.grid_layout.canvas.after.clear()
+
+    def on_algorithm_select(self, spinner, text):
+        self.clear_path()
+        self.selected_algorithm = text
+
+    def on_manual_cell_press(self, cell):
+        if self.mode == 'start':
+            for c in self.grid_layout.children:
+                if c.is_start:
+                    c.reset_state()
+            cell.set_start()
+        elif self.mode == 'goal':
+            for c in self.grid_layout.children:
+                if c.is_goal:
+                    c.reset_state()
+            cell.set_goal()
+        elif self.mode == 'obstacle':
+            cell.toggle_state()
+
+    def run_algorithm(self, instance):
+        # Implement the algorithm running logic here
+        pass
+
+    def display_explored_nodes(self, explored_nodes):
+        for node in explored_nodes:
+            x, y = node
+            cell = self.grid_layout.children[-(y * 10 + x + 1)]
+            with self.grid_layout.canvas.after:
+                Color(1, 1, 0, mode='rgba')  # Yellow for explored nodes
+                d = min(cell.width, cell.height) / 2
+                Ellipse(pos=(cell.center_x - d / 2, cell.center_y - d / 2), size=(d, d))
+
+    def save_console_output(self, instance):
+        # Implement the logic to save console output here
+        pass
+
+    def clear_console(self):
+        self.console_output.text = ''
+
+    def clear_path(self):
+        self.grid_layout.canvas.after.clear()
+
+
 class PathfindingVisualizerApp(App):
     title = 'KiviPathVis'
-    predefined_grids = predefined_grids
 
     def build(self):
         sm = ScreenManager()
+
         ws = WelcomeScreen(name='welcome')
         sm.add_widget(ws)
+
         ms = MainScreen(name='main')
         sm.add_widget(ms)
-        intro_screen = IntroductionScreen(name='intro')  
+
+        intro_screen = IntroductionScreen(name='intro')
         sm.add_widget(intro_screen)
+
         return sm
+
+    def on_manual_cell_press(self, cell):
+        screen = self.root.get_screen('manual_grid')
+        screen.on_manual_cell_press(cell)
+
+if __name__ == "__main__":
+    PathfindingVisualizerApp().run()

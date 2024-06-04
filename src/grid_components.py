@@ -4,13 +4,17 @@ from kivy.uix.button import Button
 class Cell(Button):
     def __init__(self, **kwargs):
         super(Cell, self).__init__(**kwargs)
-        self.cell_state = 'empty'  
-        self.is_start = False      
-        self.is_goal = False       
+        self.cell_state = 'empty'
+        self.is_start = False
+        self.is_goal = False
+        self.position = (0, 0)
 
     def on_press(self):
         app = App.get_running_app()
-        app.on_cell_press(self)
+        if hasattr(app, 'on_manual_cell_press'):
+            app.on_manual_cell_press(self)
+        elif hasattr(app, 'on_cell_press'):
+            app.on_cell_press(self)
 
     def toggle_state(self):
         if self.cell_state == 'empty':
@@ -36,7 +40,3 @@ class Cell(Button):
         self.is_goal = True
         self.cell_state = 'goal'
         self.background_color = (0, 0, 1, 1)  # Blue for goal
-        
-    def on_touch_down(self, touch):
-        # Do nothing(if this gets changed, the app will crash on clicking on grid, SO DON"T for 100th time...)
-            return

@@ -3,12 +3,14 @@ import numpy as np
 
 
 def get_grid_state(grid_layout):
-    grid_size = 10  
-    grid_state = [[0 for _ in range(grid_size)] for _ in range(grid_size)]
+    grid_size_x = grid_layout.cols
+    grid_size_y = grid_layout.rows
+    grid_state = [[0 for _ in range(grid_size_x)] for _ in range(grid_size_y)]
     for cell in grid_layout.children:
         x, y = cell.position
         grid_state[y][x] = 1 if cell.cell_state == 'obstacle' else 0
     return grid_state
+
 
 
 class TextOutput:
