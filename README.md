@@ -1,12 +1,12 @@
 
 # Pathfinding Visualizer
 
-PathfindingVisualizer is an interactive tool built with the Kivy framework, designed to demonstrate the workings of A* and Branch and Bound algorithms. It provides a visually engaging and intuitive way to understand pathfinding algorithms based on scenarios from the Pathfinding project.
+PathfindingVisualizer is an interactive tool built with the Kivy framework, designed to demonstrate the workings of number of  algorithms. It provides a visually engaging and intuitive way to understand pathfinding algorithms based on scenarios from the Pathfinding project.
 
 ## Features
 
 - **Interactive menu**: Click to create predefined obstacles, start points, and end points on a grid.
-- **Algorithm Selection**: Choose between A* and Branch and Bound algorithms. (More algorithms may be added in the future)
+- **Algorithm Selection**: Various algorithms have been implemented.
 - **Real-Time Visualization**: Watch the algorithms in action as they search for the shortest path.
 - **Performance Metrics**: View the number of nodes explored and the time taken for each algorithm run.
 
@@ -15,7 +15,7 @@ PathfindingVisualizer is an interactive tool built with the Kivy framework, desi
 The project is organized into two main directories for better organization and maintainability:
 
 - `src`: Contains the source code files.
-  - `algorithms.py`: Implementation of the A* and Branch and Bound algorithms.
+  - `algorithms.py`: Implementation of various algorithms.
   - `app.py`: Initializes and runs the Kivy application.
   - `constants.py`: Defines various constants used throughout the project.
   - `grid_components.py`: Manages the grid components, including obstacles, start points, and end points.
